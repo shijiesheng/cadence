@@ -82,6 +82,10 @@ func DomainTag(value string) Tag {
 	return metricWithUnknown(domain, value)
 }
 
+func OperationTag(value string) Tag {
+	return metricWithUnknown(operation, value)
+}
+
 // DomainUnknownTag returns a new domain:unknown tag-value
 func DomainUnknownTag() Tag {
 	return DomainTag("")
