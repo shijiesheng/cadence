@@ -297,8 +297,6 @@ const (
 	PersistenceFetchDynamicConfigScope
 	// PersistenceUpdateDynamicConfigScope tracks UpdateDynamicConfig calls made by service to persistence layer
 	PersistenceUpdateDynamicConfigScope
-	// PersistenceEmptyResponseScope tracks empty read calls made by service to persistence layer
-	PersistenceEmptyResponseScope
 	// HistoryClientStartWorkflowExecutionScope tracks RPC calls to history service
 	HistoryClientStartWorkflowExecutionScope
 	// HistoryClientDescribeHistoryHostScope tracks RPC calls to history service
@@ -1300,7 +1298,6 @@ var ScopeDefs = map[ServiceIdx]map[int]scopeDefinition{
 		PersistenceGetDLQSizeScope:                               {operation: "GetDLQSize"},
 		PersistenceFetchDynamicConfigScope:                       {operation: "FetchDynamicConfig"},
 		PersistenceUpdateDynamicConfigScope:                      {operation: "UpdateDynamicConfig"},
-		PersistenceEmptyResponseScope:                            {operation: "EmptyServiceCallResponse"},
 
 		ClusterMetadataArchivalConfigScope: {operation: "ArchivalConfig"},
 
