@@ -85,7 +85,17 @@ func (lb *defaultLoadBalancer) PickWritePartition(
 	taskListType int,
 	forwardedFrom string,
 ) string {
-	return lb.pickPartition(domainID, taskList, taskListType, forwardedFrom, lb.nWritePartitions)
+	domainName, err := lb.domainIDToName(domainID)
+	if err != nil {
+		return taskList.GetName()
+	}
+	n := lb.nWritePartitions(domainName, taskList.GetName(), taskListType)
+	// compare with read partitions to make sure write is always less or equal than read
+	if nRead := lb.nReadPartitions(domainName, taskList.GetName(), taskListType); n > nRead {
+		n = nRead
+	}
+
+	return lb.pickPartition(taskList, forwardedFrom, n)
 }
 
 func (lb *defaultLoadBalancer) PickReadPartition(
@@ -94,15 +104,18 @@ func (lb *defaultLoadBalancer) PickReadPartition(
 	taskListType int,
 	forwardedFrom string,
 ) string {
-	return lb.pickPartition(domainID, taskList, taskListType, forwardedFrom, lb.nReadPartitions)
+	domainName, err := lb.domainIDToName(domainID)
+	if err != nil {
+		return taskList.GetName()
+	}
+	n := lb.nReadPartitions(domainName, taskList.GetName(), taskListType)
+	return lb.pickPartition(taskList, forwardedFrom, n)
 }
 
 func (lb *defaultLoadBalancer) pickPartition(
-	domainID string,
 	taskList types.TaskList,
-	taskListType int,
 	forwardedFrom string,
-	nPartitions dynamicconfig.IntPropertyFnWithTaskListInfoFilters,
+	nPartitions int,
 ) string {
 
 	if forwardedFrom != "" || taskList.GetKind() == types.TaskListKindSticky {
@@ -114,17 +127,11 @@ func (lb *defaultLoadBalancer) pickPartition(
 		return taskList.GetName()
 	}
 
-	domainName, err := lb.domainIDToName(domainID)
-	if err != nil {
+	if nPartitions <= 0 {
 		return taskList.GetName()
 	}
 
-	n := nPartitions(domainName, taskList.GetName(), taskListType)
-	if n <= 0 {
-		return taskList.GetName()
-	}
-
-	p := rand.Intn(n)
+	p := rand.Intn(nPartitions)
 	if p == 0 {
 		return taskList.GetName()
 	}
