@@ -282,3 +282,26 @@ func (h fakeTaskHydrator) Hydrate(ctx context.Context, task persistence.Replicat
 	}
 	panic("fix the test, should not reach this")
 }
+
+func TestNewTaskAckManager(t *testing.T) {
+	type args struct {
+		shardID       int
+		ackLevels     ackLevelStore
+		metricsClient metrics.Client
+		logger        log.Logger
+		reader        taskReader
+		store         *TaskStore
+	}
+	tests := []struct {
+		name string
+		args args
+		want TaskAckManager
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.want, NewTaskAckManager(tt.args.shardID, tt.args.ackLevels, tt.args.metricsClient, tt.args.logger, tt.args.reader, tt.args.store), "NewTaskAckManager(%v, %v, %v, %v, %v, %v)", tt.args.shardID, tt.args.ackLevels, tt.args.metricsClient, tt.args.logger, tt.args.reader, tt.args.store)
+		})
+	}
+}
