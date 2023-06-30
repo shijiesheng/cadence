@@ -46,7 +46,8 @@ var (
 type (
 	domainCLIImpl struct {
 		// used when making RPC call to frontend service
-		frontendClient frontend.Client
+		frontendClient    frontend.Client
+		destinationClient frontend.Client
 
 		// act as admin to modify domain in DB directly
 		domainHandler domain.Handler
@@ -60,9 +61,11 @@ func newDomainCLI(
 ) *domainCLIImpl {
 
 	var frontendClient frontend.Client
+	//var destFrontendClient frontend.Client // addded this
 	var domainHandler domain.Handler
 	if !isAdminMode {
 		frontendClient = initializeFrontendClient(c)
+		//destFrontendClient = initializeDestFrontEndClient(c) // added this
 	} else {
 		domainHandler = initializeAdminDomainHandler(c)
 	}
@@ -444,6 +447,21 @@ func (d *domainCLIImpl) DescribeDomain(c *cli.Context) {
 		Border:          true,
 		PrintDateTime:   true,
 	})
+}
+
+func (d *domainCLIImpl) MigrateDomain(ctx context.Context, request *types.DescribeDomainRequest) {
+
+	currResp, err := d.frontendClient.DescribeDomain(ctx, request)
+	if err != nil {
+		ErrorAndExit(fmt.Sprintf("Could not describe old domain, Please check to see if old domain exists before migrating."), err)
+	}
+	newResp, err := d.destinationClient.DescribeDomain(ctx, request)
+	if err != nil {
+		ErrorAndExit(fmt.Sprintf("Could not describe new domain, Please check to see if new domain exists before migrating."), err)
+	}
+
+	fmt.Println(currResp)
+	fmt.Println(newResp)
 }
 
 type BadBinaryRow struct {
