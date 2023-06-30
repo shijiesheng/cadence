@@ -59,20 +59,16 @@ func newDomainCLI(
 	c *cli.Context,
 	isAdminMode bool,
 ) *domainCLIImpl {
-
-	var frontendClient frontend.Client
-	//var destFrontendClient frontend.Client // addded this
-	var domainHandler domain.Handler
+	d := &domainCLIImpl{}
 	if !isAdminMode {
-		frontendClient = initializeFrontendClient(c)
-		//destFrontendClient = initializeDestFrontEndClient(c) // added this
+		d.frontendClient = initializeFrontendClient(c)
+		d.destinationClient = newClientFactory(func(c *cli.Context) string {
+			return c.String(FlagDestinationAddress)
+		}).ServerFrontendClient(c)
 	} else {
-		domainHandler = initializeAdminDomainHandler(c)
+		d.domainHandler = initializeAdminDomainHandler(c)
 	}
-	return &domainCLIImpl{
-		frontendClient: frontendClient,
-		domainHandler:  domainHandler,
-	}
+	return d
 }
 
 // RegisterDomain register a domain
@@ -449,20 +445,13 @@ func (d *domainCLIImpl) DescribeDomain(c *cli.Context) {
 	})
 }
 
-func (d *domainCLIImpl) MigrateDomain(ctx context.Context, request *types.DescribeDomainRequest) {
-
-	currResp, err := d.frontendClient.DescribeDomain(ctx, request)
-	if err != nil {
-		ErrorAndExit(fmt.Sprintf("Could not describe old domain, Please check to see if old domain exists before migrating."), err)
-	}
-	newResp, err := d.destinationClient.DescribeDomain(ctx, request)
-	if err != nil {
-		ErrorAndExit(fmt.Sprintf("Could not describe new domain, Please check to see if new domain exists before migrating."), err)
-	}
-
-	fmt.Println(currResp)
-	fmt.Println(newResp)
+func (d *domainCLIImpl) MigrateDomain(c *cli.Context){
+	request := types.DescribeDomainRequest{}
+	ctx, cancel := newContext(c)
+	defer cancel()
+	d.migrateDomain(ctx, &request)
 }
+
 
 type BadBinaryRow struct {
 	Checksum  string    `header:"Binary Checksum"`
@@ -697,6 +686,21 @@ func (d *domainCLIImpl) describeDomain(
 	}
 
 	return d.domainHandler.DescribeDomain(ctx, request)
+}
+
+
+func (d *domainCLIImpl) migrateDomain(ctx context.Context, request *types.DescribeDomainRequest) {
+	currResp, err := d.frontendClient.DescribeDomain(ctx, request)
+	if err != nil {
+		ErrorAndExit(fmt.Sprintf("Could not describe old domain, Please check to see if old domain exists before migrating."), err)
+	}
+	newResp, err := d.destinationClient.DescribeDomain(ctx, request)
+	if err != nil {
+		ErrorAndExit(fmt.Sprintf("Could not describe new domain, Please check to see if new domain exists before migrating."), err)
+	}
+
+	fmt.Println(currResp)
+	fmt.Println(newResp)
 }
 
 func archivalStatus(c *cli.Context, statusFlagName string) *types.ArchivalStatus {

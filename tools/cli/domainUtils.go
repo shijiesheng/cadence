@@ -201,6 +201,20 @@ var (
 		getFormatFlag(),
 	}
 
+	migrateDomainFlags = []cli.Flag{
+
+		cli.StringFlag{
+			Name:  FlagDestinationAddress,
+			Usage: "t",
+		},
+		cli.StringFlag{
+			Name:  FlagDestinationDomain,
+			Usage: "t",
+		},
+
+		getFormatFlag(),
+	}
+
 	adminDomainCommonFlags = getDBFlags()
 
 	adminRegisterDomainFlags = append(
@@ -229,6 +243,10 @@ func initializeFrontendClient(
 ) frontend.Client {
 	return cFactory.ServerFrontendClient(context)
 }
+
+//func initializeDestFrontEndClient(context *cli.Context) frontend.Client { //also added this
+//	return cFactory.ServerDestFrontendClient(context)
+//}
 
 func initializeAdminDomainHandler(
 	context *cli.Context,
