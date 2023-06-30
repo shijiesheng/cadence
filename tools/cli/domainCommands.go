@@ -445,13 +445,12 @@ func (d *domainCLIImpl) DescribeDomain(c *cli.Context) {
 	})
 }
 
-func (d *domainCLIImpl) MigrateDomain(c *cli.Context){
+func (d *domainCLIImpl) MigrateDomain(c *cli.Context) {
 	request := types.DescribeDomainRequest{}
 	ctx, cancel := newContext(c)
 	defer cancel()
 	d.migrateDomain(ctx, &request)
 }
-
 
 type BadBinaryRow struct {
 	Checksum  string    `header:"Binary Checksum"`
@@ -486,6 +485,22 @@ type DomainRow struct {
 	VisibilityArchivalURI    string               `header:"Visibility Archival URI"`
 	BadBinaries              []BadBinaryRow
 	FailoverInfo             *FailoverInfoRow
+}
+
+type DomainMigrationRow struct {
+	ValidationChecker string `header:""`
+	ValidationResult  bool   `header:""`
+
+	ValidationDetails ValidationDetails
+}
+
+type ValidationDetails struct {
+	// related to metadata checker
+	OldDomain *DomainRow
+	NewDomain *DomainRow
+
+	// checker 2
+
 }
 
 func newDomainRow(domain *types.DescribeDomainResponse) DomainRow {
@@ -688,19 +703,38 @@ func (d *domainCLIImpl) describeDomain(
 	return d.domainHandler.DescribeDomain(ctx, request)
 }
 
+func (d *domainCLIImpl) migrateDomain(c *cli.Context) {
+	// TODO add flag validation on required flags
+	// getRequiredOption(c, )
 
-func (d *domainCLIImpl) migrateDomain(ctx context.Context, request *types.DescribeDomainRequest) {
+
+	// TODO do in parallel sync.WaitGroup maybe a good choice
+	row := d.migrationDomainMetadataCheck(c)
+	row := d.migrationDomainMetadataCheck(c)
+	Render([]DomainRow, )
+}
+
+func (d *domainCLIImpl) migrationDomainMetadataCheck(c *cli.Context) DomainMigrationRow {
+	ctx, cancel := newContext(c)
+	defer cancel()
 	currResp, err := d.frontendClient.DescribeDomain(ctx, request)
 	if err != nil {
 		ErrorAndExit(fmt.Sprintf("Could not describe old domain, Please check to see if old domain exists before migrating."), err)
 	}
-	newResp, err := d.destinationClient.DescribeDomain(ctx, request)
+	destResp, err := d.destinationClient.DescribeDomain(ctx, request)
 	if err != nil {
 		ErrorAndExit(fmt.Sprintf("Could not describe new domain, Please check to see if new domain exists before migrating."), err)
 	}
+    return DomainMigrationRow{
 
-	fmt.Println(currResp)
-	fmt.Println(newResp)
+	}
+}
+
+func (d *domainCLIImpl) migrationDomainLongRunningWorkflowCheck(c *cli.Context) DomainMigrationRow {
+	ctx, cancel := newContext(c)
+	defer cancel()
+
+
 }
 
 func archivalStatus(c *cli.Context, statusFlagName string) *types.ArchivalStatus {
@@ -723,4 +757,25 @@ func clustersToStrings(clusters []*types.ClusterReplicationConfiguration) []stri
 		res = append(res, cluster.GetClusterName())
 	}
 	return res
+}
+
+// countWorkflow count number of workflows
+func (d *domainCLIImpl) countLongRunningWorkflowsInDest(c *cli.Context) int {
+	wfClient := getWorkflowClient(c)
+
+	domain := getRequiredOption(c, FlagDestinationDomainDomain)
+
+	request := &types.CountWorkflowExecutionsRequest{
+		Domain: domain,
+		// TODO chagne to past 14 days
+		Query:   "CloseTime=missing AND StartTime < 1679632580000000000",
+	}
+
+	ctx, cancel := newContextForLongPoll(c)
+	defer cancel()
+	response, err := d.destinationClient.CountWorkflowExecutions(ctx, request)
+	if err != nil {
+		ErrorAndExit("Failed to count workflow.", err)
+	}
+	return response.GetCount()
 }
