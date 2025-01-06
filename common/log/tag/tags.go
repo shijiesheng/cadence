@@ -523,6 +523,14 @@ func Bool(b bool) Tag {
 	return newBoolTag("bool", b)
 }
 
+func EnableAutoConfig(b bool) Tag {
+	return newBoolTag("enable-auto-config", b)
+}
+
+func PollerWaitTime(waitTimeInMS int) Tag {
+	return newInt("poller-wait-time", waitTimeInMS)
+}
+
 /* Tags for logging manual access */
 
 // RequestCaller returns tag for caller (the name of the service making this request)

@@ -27,6 +27,7 @@ import (
 	"github.com/uber/cadence/common"
 	"github.com/uber/cadence/common/cache"
 	"github.com/uber/cadence/common/log"
+	"github.com/uber/cadence/common/log/tag"
 	"github.com/uber/cadence/common/metrics"
 	"github.com/uber/cadence/common/quotas"
 	"github.com/uber/cadence/common/types"
@@ -214,6 +215,15 @@ func (h *handlerImpl) PollForActivityTask(
 	}
 
 	response, err := h.engine.PollForActivityTask(hCtx, request)
+	if response != nil {
+		if response.AutoConfigHint == nil {
+			h.logger.Info("decision auto config hint is nil", tag.WorkflowTaskListName(request.PollRequest.TaskList.GetName()))
+		} else {
+			h.logger.Info("decision auto config hint value",
+			tag.EnableAutoConfig(response.AutoConfigHint.EnableAutoConfig),
+			tag.PollerWaitTime(int(response.AutoConfigHint.PollerWaitTimeInMs)))
+		}
+	}
 	return response, hCtx.handleErr(err)
 }
 
@@ -252,6 +262,15 @@ func (h *handlerImpl) PollForDecisionTask(
 	}
 
 	response, err := h.engine.PollForDecisionTask(hCtx, request)
+	if response != nil {
+		if response.AutoConfigHint == nil {
+			h.logger.Info("decision auto config hint is nil", tag.WorkflowTaskListName(request.PollRequest.TaskList.GetName()))
+		} else {
+			h.logger.Info("decision auto config hint value",
+			tag.EnableAutoConfig(response.AutoConfigHint.EnableAutoConfig),
+			tag.PollerWaitTime(int(response.AutoConfigHint.PollerWaitTimeInMs)))
+		}
+	}
 	return response, hCtx.handleErr(err)
 }
 

@@ -331,7 +331,7 @@ func (s *matchingEngineSuite) PollForDecisionTasksResultTest() {
 			Kind: &tlKind,
 		},
 		AutoConfigHint: &types.AutoConfigHint{
-			EnableAutoConfig:   false,
+			EnableAutoConfig:   true,
 			PollerWaitTimeInMs: 0,
 		},
 	}
@@ -1452,6 +1452,7 @@ func defaultTestConfig() *config.Config {
 	config.AsyncTaskDispatchTimeout = dynamicconfig.GetDurationPropertyFnFilteredByTaskListInfo(10 * time.Millisecond)
 	config.MaxTimeBetweenTaskDeletes = time.Duration(0)
 	config.EnableTasklistOwnershipGuard = func(opts ...dynamicconfig.FilterOption) bool { return true }
+	config.EnableClientAutoConfig = dynamicconfig.GetBoolPropertyFilteredByTaskListInfo(true)
 	return config
 }
 
@@ -1644,6 +1645,7 @@ func pollTask(engine *matchingEngineImpl, hCtx *handlerContext, request *pollTas
 			WorkflowType:                    resp.WorkflowType,
 			WorkflowDomain:                  resp.WorkflowDomain,
 			Header:                          resp.Header,
+			AutoConfigHint: resp.AutoConfigHint,
 		}, nil
 	}
 	resp, err := engine.PollForDecisionTask(hCtx, &types.MatchingPollForDecisionTaskRequest{
