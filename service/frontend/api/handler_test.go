@@ -265,11 +265,11 @@ func (s *workflowHandlerSuite) TestPollForTask_Failed_ContextTimeoutTooShort() {
 
 func (s *workflowHandlerSuite) TestPollForDecisionTask_AutoConfigHint() {
 
-	for _, tt := range []struct{
-		name string
+	for _, tt := range []struct {
+		name     string
 		response *types.MatchingPollForDecisionTaskResponse
 		expected *types.PollForDecisionTaskResponse
-	} {
+	}{
 		{
 			"success",
 			&types.MatchingPollForDecisionTaskResponse{
@@ -379,11 +379,11 @@ func (s *workflowHandlerSuite) TestPollForActivityTask_IsolationGroupDrained() {
 
 func (s *workflowHandlerSuite) TestPollForActivityTask() {
 
-	for _, tt := range []struct{
-		name string
+	for _, tt := range []struct {
+		name     string
 		response *types.MatchingPollForActivityTaskResponse
 		expected *types.PollForActivityTaskResponse
-	} {
+	}{
 		{
 			"success",
 			&types.MatchingPollForActivityTaskResponse{
@@ -392,8 +392,8 @@ func (s *workflowHandlerSuite) TestPollForActivityTask() {
 					WorkflowID: "wid",
 					RunID:      "rid",
 				},
-				ActivityID: "1",
-				Input:      []byte(`{"key": "value"}`),
+				ActivityID:     "1",
+				Input:          []byte(`{"key": "value"}`),
 				AutoConfigHint: &types.AutoConfigHint{true, 1000},
 			},
 			&types.PollForActivityTaskResponse{
@@ -402,8 +402,8 @@ func (s *workflowHandlerSuite) TestPollForActivityTask() {
 					WorkflowID: "wid",
 					RunID:      "rid",
 				},
-				ActivityID: "1",
-				Input:      []byte(`{"key": "value"}`),
+				ActivityID:     "1",
+				Input:          []byte(`{"key": "value"}`),
 				AutoConfigHint: &types.AutoConfigHint{true, 1000},
 			},
 		},
@@ -416,7 +416,7 @@ func (s *workflowHandlerSuite) TestPollForActivityTask() {
 				AutoConfigHint: &types.AutoConfigHint{true, 1000},
 			},
 		},
-	}{
+	} {
 		s.T().Run(tt.name, func(t *testing.T) {
 			config := s.newConfig(dc.NewInMemoryClient())
 			config.EnableTasklistIsolation = dc.GetBoolPropertyFnFilteredByDomain(true)
