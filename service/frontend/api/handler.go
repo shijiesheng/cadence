@@ -2907,7 +2907,9 @@ func (wh *WorkflowHandler) createPollForDecisionTaskResponse(
 
 	if matchingResp.WorkflowExecution == nil {
 		// this will happen if there is no decision task to be send to worker / caller
-		return &types.PollForDecisionTaskResponse{}, nil
+		return &types.PollForDecisionTaskResponse{
+			AutoConfigHint: matchingResp.AutoConfigHint,
+		}, nil
 	}
 
 	var history *types.History
