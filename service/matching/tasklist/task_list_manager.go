@@ -27,6 +27,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math/rand/v2"
 	"reflect"
 	"sort"
 	"sync"
@@ -63,6 +64,8 @@ const (
 	returnEmptyTaskTimeBudget = time.Second
 	noIsolationTimeout        = time.Duration(0)
 	minimumIsolationDuration  = time.Millisecond * 50
+	// sampling rate for emitting misconfigured partition metrics
+	misconfiguredPartitionEmitRate = 0.05
 )
 
 var (
@@ -643,7 +646,9 @@ func (c *taskListManagerImpl) GetTask(
 }
 
 func (c *taskListManagerImpl) getTask(ctx context.Context, maxDispatchPerSecond *float64) (*InternalTask, error) {
-	c.emitMisconfiguredPartitionMetrics()
+	if rand.Float32() < misconfiguredPartitionEmitRate {
+		c.emitMisconfiguredPartitionMetrics()
+	}
 	// We need to set a shorter timeout than the original ctx; otherwise, by the time ctx deadline is
 	// reached, instead of emptyTask, context timeout error is returned to the frontend by the rpc stack,
 	// which counts against our SLO. By shortening the timeout by a very small amount, the emptyTask can be
