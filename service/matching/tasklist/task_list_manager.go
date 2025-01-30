@@ -27,7 +27,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"math/rand/v2"
 	"reflect"
 	"sort"
 	"sync"
@@ -36,6 +35,7 @@ import (
 
 	"golang.org/x/exp/maps"
 	"golang.org/x/sync/errgroup"
+	"math/rand/v2"
 
 	"github.com/uber/cadence/client/history"
 	"github.com/uber/cadence/client/matching"
