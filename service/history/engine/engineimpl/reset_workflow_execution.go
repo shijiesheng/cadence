@@ -206,7 +206,7 @@ func (e *historyEngineImpl) isWorkflowResettable(baseMutableState execution.Muta
 	}
 
 	if currentCluster := e.clusterMetadata.GetCurrentClusterName(); currentCluster != startClusterName {
-		return fmt.Errorf("workflow was not started in the current cluster, this could happen if domain was active in another cluster before")
+		return fmt.Errorf("workflow was not started in the current cluster: failover to workflow start cluster %s before reset", startClusterName)
 	}
 
 	return nil

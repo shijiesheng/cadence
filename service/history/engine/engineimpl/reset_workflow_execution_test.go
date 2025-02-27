@@ -269,7 +269,7 @@ func TestResetWorkflowExecution(t *testing.T) {
 				},
 			},
 			expectedErr: &types.BadRequestError{
-				Message: "workflow is not resettable. Error: workflow was not started in the current cluster, this could happen if domain was active in another cluster before",
+				Message: "workflow is not resettable. Error: workflow was not started in the current cluster: failover to workflow start cluster standby before reset",
 			},
 		},
 		{
