@@ -3531,6 +3531,7 @@ var (
 
 	// ReplicationTaskDelayBucket contains buckets for replication task delay
 	ReplicationTaskDelayBucket = tally.DurationBuckets([]time.Duration{
+		0 * time.Second, // zero value is needed for the first bucket
 		1 * time.Second,
 		10 * time.Second,
 		1 * time.Minute,
