@@ -414,10 +414,7 @@ func (d *domainCLIImpl) DeprecateDomain(c *cli.Context) error {
 		return commoncli.Problem("Required flag not provided: ", err)
 	}
 
-	securityToken, err := getRequiredOption(c, FlagSecurityToken)
-	if err != nil {
-		return commoncli.Problem("Required flag not provided: ", err)
-	}
+	securityToken := c.String(FlagSecurityToken)
 
 	ctx, cancel, err := newContext(c)
 	defer cancel()
