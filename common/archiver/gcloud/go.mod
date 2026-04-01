@@ -22,7 +22,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/mock v1.7.0-rc.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/m3db/prometheus_client_golang v0.8.1 // indirect
+	github.com/m3db/prometheus_client_golang v1.12.8 // indirect
 	github.com/opentracing/opentracing-go v1.2.0 // indirect
 	github.com/pborman/uuid v0.0.0-20180906182336-adf5a7427709 // indirect
 	github.com/robfig/cron v1.2.0 // indirect
@@ -79,17 +79,16 @@ require (
 	github.com/googleapis/gax-go/v2 v2.12.2 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jonboulle/clockwork v0.5.0 // indirect
-	github.com/m3db/prometheus_client_model v0.1.0 // indirect
-	github.com/m3db/prometheus_common v0.1.0 // indirect
-	github.com/m3db/prometheus_procfs v0.8.1 // indirect
+	github.com/m3db/prometheus_client_model v0.2.1 // indirect
+	github.com/m3db/prometheus_common v0.34.6 // indirect
 	github.com/marusama/semaphore/v2 v2.5.0 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/prometheus/client_golang v1.11.1 // indirect
+	github.com/prometheus/client_golang v1.12.1 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
-	github.com/prometheus/common v0.26.0 // indirect
-	github.com/prometheus/procfs v0.6.0 // indirect
+	github.com/prometheus/common v0.34.0 // indirect
+	github.com/prometheus/procfs v0.7.3 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/twmb/murmur3 v1.1.8 // indirect
